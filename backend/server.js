@@ -34,9 +34,10 @@ app.use(morgan('dev')); // Request Logger
 
 // CSRF Protection Middleware
 const csrfProtection = csurf({
-  cookie: {
+ cookie: {
     httpOnly: true,
-    sameSite: 'lax', // Allow cross-site within localhost
+    secure: true,
+    sameSite: 'none'
   }
 });
 
