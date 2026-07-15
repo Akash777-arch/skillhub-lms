@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Backgrounds */
+    --bg-primary: #0F172A;
+    --bg-secondary: #1E293B;
+    --bg-glass: rgba(30, 41, 59, 0.7);
+
+    /* Accents */
+    --brand-purple: #8B5CF6;
+    --brand-blue: #3B82F6;
+    --brand-gradient: linear-gradient(to right, #8B5CF6, #3B82F6);
+
+    /* Text */
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+
+    /* Semantic */
+    --success: #10B981;
+    --danger: #EF4444;
+    --warning: #F59E0B;
+    --info: #3B82F6;
+  }
+
+  body {
+    @apply bg-[var(--bg-primary)] text-[var(--text-secondary)] font-sans antialiased min-h-screen selection:bg-[var(--brand-purple)] selection:text-white;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-[var(--text-primary)] font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  /* Common utilities */
+  .glass-panel {
+    @apply bg-[var(--bg-glass)] backdrop-blur-md border border-slate-700/50;
+  }
+}
