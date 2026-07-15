@@ -9,6 +9,7 @@ const connectDB = require('./config/db');
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 const { sendResponse } = require('./utils/apiResponse');
 
+// Route Imports
 const authRoutes = require('./routes/authRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const enrollmentRoutes = require('./routes/enrollmentRoutes');
@@ -17,31 +18,35 @@ const submissionRoutes = require('./routes/submissionRoutes');
 // Initialize app
 const app = express();
 
-// Middlewares
+// --- Middlewares ---
 app.use(helmet()); // Security headers
+
+// CORS Configuration (Allows Vercel Frontend to talk to Render Backend)
 app.use(cors({
   origin: [
     'http://localhost:5173', 
     'http://127.0.0.1:5173',
     'https://skillhub-lms-steel.vercel.app'
   ],
-  credentials: true
+  credentials: true // Crucial for sending cookies across domains
 }));
+
 app.use(express.json()); // Body parser
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); // Parse cookies
 app.use(morgan('dev')); // Request Logger
 
-// CSRF Protection Middleware
+// --- CSRF Protection Middleware ---
+// Configured to allow cross-site cookies between Render and Vercel
 const csrfProtection = csurf({
  cookie: {
     httpOnly: true,
-    secure: true,
-    sameSite: 'none'
+    secure: true,      // Must be true for sameSite: 'none'
+    sameSite: 'none'   // Allows cross-domain cookie exchange
   }
 });
 
-// Provide CSRF Token Endpoint
+// Provide CSRF Token Endpoint to the frontend
 app.get('/api/v1/auth/csrf-token', csrfProtection, (req, res) => {
   res.status(200).json({ csrfToken: req.csrfToken() });
 });
@@ -49,7 +54,7 @@ app.get('/api/v1/auth/csrf-token', csrfProtection, (req, res) => {
 // Apply CSRF to all API routes except GETs
 app.use('/api/v1', csrfProtection);
 
-// API Routes
+// --- API Routes ---
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/courses', courseRoutes);
 app.use('/api/v1/enrollments', enrollmentRoutes);
@@ -59,28 +64,46 @@ app.get('/api/v1/health', (req, res) => {
   sendResponse(res, 200, true, 'API is running optimally');
 });
 
-// 404 & Error Handling
+// --- 404 & Error Handling ---
 app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-// Connect to Database and ONLY start server if successful
+// --- Connect to Database and Auto-Seed ---
 connectDB().then(async () => {
   const Course = require('./models/Course');
+  
+  // 1. AUTO-SEEDER: Check if database is empty and inject data if needed
+  try {
+    const count = await Course.countDocuments();
+    if (count === 0) {
+      console.log('Database is empty! Injecting raw sample courses...');
+      const fs = require('fs');
+      const path = require('path');
+      
+      const rawData = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'courses.json'), 'utf-8'));
+      await Course.insertMany(rawData);
+      console.log('Raw sample data auto-seeded successfully.');
+    }
+  } catch (err) {
+    console.error('Failed to auto-seed database:', err.message);
+  }
+
+  // 2. Map YouTube videos over the courses 
   const courses = await Course.find();
   let updatedCount = 0;
   
   const tutorialVideos = [
-    'https://www.youtube.com/watch?v=erEgovG9WBs', // Web Dev
-    'https://www.youtube.com/watch?v=Tn6-PIqc4UM', // React
-    'https://www.youtube.com/watch?v=Sklc_fQBmcs', // Next.js
-    'https://www.youtube.com/watch?v=DHjqpvDnNGE', // JS
-    'https://www.youtube.com/watch?v=mr15Xzb1Ook', // Tailwind
-    'https://www.youtube.com/watch?v=zJSY8tbf_ys', // Frontend
-    'https://www.youtube.com/watch?v=PkZNo7MFNFg', // Javascript Course
-    'https://www.youtube.com/watch?v=bMknfKXIFA8', // React Course
-    'https://www.youtube.com/watch?v=1Rn18YqNl_o'  // Git & Github
+    'https://www.youtube.com/watch?v=erEgovG9WBs',
+    'https://www.youtube.com/watch?v=Tn6-PIqc4UM',
+    'https://www.youtube.com/watch?v=Sklc_fQBmcs',
+    'https://www.youtube.com/watch?v=DHjqpvDnNGE',
+    'https://www.youtube.com/watch?v=mr15Xzb1Ook',
+    'https://www.youtube.com/watch?v=zJSY8tbf_ys',
+    'https://www.youtube.com/watch?v=PkZNo7MFNFg',
+    'https://www.youtube.com/watch?v=bMknfKXIFA8',
+    'https://www.youtube.com/watch?v=1Rn18YqNl_o'
   ];
   let videoIndex = 0;
 
@@ -98,9 +121,15 @@ connectDB().then(async () => {
       updatedCount++;
     }
   }
-  console.log(`Seeded YouTube URLs in ${updatedCount} courses.`);
+  
+  if (updatedCount > 0) {
+    console.log(`Verified YouTube URLs in ${updatedCount} courses.`);
+  }
 
+  // 3. Start the server
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
   });
+}).catch(err => {
+  console.error("Database connection failed. Server not started.", err);
 });
