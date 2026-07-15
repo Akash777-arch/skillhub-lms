@@ -20,7 +20,11 @@ const app = express();
 // Middlewares
 app.use(helmet()); // Security headers
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  origin: [
+    'http://localhost:5173', 
+    'http://127.0.0.1:5173',
+    'https://skillhub-lms-steel.vercel.app'
+  ],
   credentials: true
 }));
 app.use(express.json()); // Body parser
