@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../lib/api';
 import { Download, Award, Loader2, ArrowLeft } from 'lucide-react';
 
 export const CertificatePage = () => {
@@ -12,7 +12,7 @@ export const CertificatePage = () => {
   useEffect(() => {
     const fetchCertificate = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/v1/enrollments/certificate/${id}`);
+        const { data } = await api.get(`/enrollments/certificate/${id}`);
         setCertificate(data.data);
         setLoading(false);
       } catch (err) {
