@@ -17,6 +17,7 @@ const submissionRoutes = require('./routes/submissionRoutes');
 
 // Initialize app
 const app = express();
+app.set('trust proxy', 1); // Essential for secure cookies behind a reverse proxy (Render)
 
 // --- Middlewares ---
 app.use(helmet()); // Security headers
