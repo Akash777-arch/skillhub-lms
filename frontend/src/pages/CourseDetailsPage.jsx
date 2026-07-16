@@ -86,8 +86,9 @@ export const CourseDetailsPage = () => {
     }
     setEnrollLoading(true);
     try {
-      await api.post(`/courses/${id}/enroll`);
+      const res = await api.post(`/courses/${id}/enroll`);
       setIsEnrolled(true);
+      setEnrollmentId(res.data.data._id);
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to enroll');
     } finally {

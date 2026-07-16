@@ -46,7 +46,7 @@ export const MyCoursesPage = () => {
                     <CourseCard course={enrollment.course} />
                   </Link>
                   {enrollment.progress === 100 && (
-                    <Link to={`/certificate/${enrollment.course._id}`} className="mt-2 w-full flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-500 font-bold py-2 rounded-xl border border-emerald-500/30 hover:bg-emerald-500/20 transition-colors text-sm">
+                    <Link to={`/certificate/${enrollment._id}`} className="mt-2 w-full flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-500 font-bold py-2 rounded-xl border border-emerald-500/30 hover:bg-emerald-500/20 transition-colors text-sm">
                       <Award className="w-4 h-4" /> View Certificate
                     </Link>
                   )}
