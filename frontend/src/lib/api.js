@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const baseURL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
   ? 'http://localhost:5000/api/v1' 
-  : 'https://skillhub-backend-h5u9.onrender.com/api/v1';
+  : '/api/v1'; // Uses Vercel proxy rewrite in production
 
 const api = axios.create({
   baseURL,

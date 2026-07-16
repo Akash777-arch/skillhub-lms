@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/api/v1/:path*", "destination": "https://skillhub-backend-h5u9.onrender.com/api/v1/:path*" },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
