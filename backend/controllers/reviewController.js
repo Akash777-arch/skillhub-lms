@@ -48,7 +48,10 @@ const addReview = async (req, res, next) => {
       user: userId
     });
 
-    // courseCache removed
+    const { courseCache } = require('./courseController');
+    if (courseCache) {
+      courseCache.flushAll();
+    }
 
     sendResponse(res, 201, true, 'Review added successfully', review);
   } catch (error) {

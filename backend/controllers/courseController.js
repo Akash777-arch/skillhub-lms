@@ -240,4 +240,7 @@ const updateCurriculum = async (req, res, next) => {
   }
 };
 
-module.exports = { getCourses, getCourseById, createCourse, streamLesson, getInstructorCourses, updateCurriculum };
+module.exports = { getCourses, getCourseById, createCourse, streamLesson,  getInstructorCourses,
+  updateCurriculum,
+  courseCache
+};
