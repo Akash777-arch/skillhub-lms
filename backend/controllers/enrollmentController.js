@@ -29,6 +29,9 @@ const enrollCourse = async (req, res, next) => {
       course: courseId
     });
 
+    course.studentCount = (course.studentCount || 0) + 1;
+    await course.save();
+
     sendResponse(res, 201, true, 'Successfully enrolled in course', enrollment);
   } catch (error) {
     next(error);
@@ -158,7 +161,7 @@ const getCertificateByEnrollmentId = async (req, res, next) => {
       throw new Error('Enrollment not found');
     }
 
-    if (enrollment.progress !== 100) {
+    if (!enrollment.progress || enrollment.progress < 99) {
       res.status(403);
       throw new Error('Course not completed yet');
     }

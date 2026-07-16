@@ -91,8 +91,18 @@ export const InstructorDashboardView = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard title="Total Courses" value={courses.length} icon={BookOpen} colorClass="text-brand-purple" />
-        <StatCard title="Total Students" value="0" icon={Users} colorClass="text-brand-blue" />
-        <StatCard title="Revenue" value="$0.00" icon={DollarSign} colorClass="text-emerald-500" />
+        <StatCard 
+          title="Total Students" 
+          value={courses.reduce((acc, course) => acc + (course.studentCount || 0), 0)} 
+          icon={Users} 
+          colorClass="text-brand-blue" 
+        />
+        <StatCard 
+          title="Revenue" 
+          value={`$${courses.reduce((acc, course) => acc + ((course.studentCount || 0) * (course.price || 0)), 0).toFixed(2)}`} 
+          icon={DollarSign} 
+          colorClass="text-emerald-500" 
+        />
       </div>
 
       <div className="flex gap-4 border-b border-slate-700 mb-6">

@@ -34,6 +34,10 @@ const courseSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  studentCount: {
+    type: Number,
+    default: 0
+  },
   instructor: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   category: { type: String, required: true },
   price: { type: Number, default: 0 },
