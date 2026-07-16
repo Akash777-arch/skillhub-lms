@@ -39,11 +39,13 @@ app.use(morgan('dev')); // Request Logger
 
 // --- CSRF Protection Middleware ---
 // Configured to allow cross-site cookies between Render and Vercel
+const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+
 const csrfProtection = csurf({
  cookie: {
     httpOnly: true,
-    secure: true,      // Must be true for sameSite: 'none'
-    sameSite: 'none'   // Allows cross-domain cookie exchange
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'strict'
   }
 });
 

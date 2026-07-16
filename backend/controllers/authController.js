@@ -94,11 +94,13 @@ const loginUser = async (req, res, next) => {
 // @route   POST /api/v1/auth/logout
 // @access  Private
 const logoutUser = (req, res) => {
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+
   res.cookie('jwt', '', {
     httpOnly: true,
     expires: new Date(0),
-    secure: process.env.NODE_ENV !== 'development',
-    sameSite: process.env.NODE_ENV === 'development' ? 'strict' : 'none',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'strict',
   });
   sendResponse(res, 200, true, 'Logged out successfully');
 };
