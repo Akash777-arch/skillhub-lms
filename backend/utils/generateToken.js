@@ -5,11 +5,10 @@ const generateToken = (res, userId) => {
     expiresIn: '30d',
   });
 
-  // Set JWT as HTTP-Only Cookie
   res.cookie('jwt', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV !== 'development', // Use secure cookies in production
-    sameSite: 'strict', // Prevent CSRF attacks
+    sameSite: process.env.NODE_ENV === 'development' ? 'strict' : 'none', // Allow cross-domain in production
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   });
 };
